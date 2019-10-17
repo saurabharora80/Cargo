@@ -1,14 +1,18 @@
 package uk.co.agilesoftware;
 
 class CargoPackage {
-    private final int index;
+    private final String belongsToStation;
 
     @Override
     public String toString() {
-        return "Cargo Package " + index;
+        return "Cargo Package for " + belongsToStation;
     }
 
-    public CargoPackage(int index) {
-        this.index = index;
+    CargoPackage(String belongsToStation) {
+        this.belongsToStation = belongsToStation;
+    }
+
+    boolean belongTo(Station station) {
+        return station.name.equals(belongsToStation);
     }
 }
