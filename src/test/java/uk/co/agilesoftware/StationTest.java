@@ -1,6 +1,5 @@
 package uk.co.agilesoftware;
 
-import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -15,7 +14,7 @@ public class StationTest {
     @Test
     public void shouldBeAbleToDeliverCargoToStation() throws Exception {
         final HashSet<CargoPackage> cargoPackages = new HashSet<CargoPackage>() {{
-            IntStream.range(1, 50).forEach(index -> add(new CargoPackage(index)));
+            IntStream.range(1, 50).forEach(index -> add(new CargoPackage("s1")));
         }};
 
         final Station station = new Station("S1");

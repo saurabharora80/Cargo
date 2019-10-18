@@ -30,11 +30,8 @@ public class RailwayTest {
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
-        }).collect(Collectors.toList());
+        }).distinct().collect(Collectors.toList());
 
-        //We have 5 objects
-        Assert.assertThat(ids.size(), CoreMatchers.is(5));
-        //And they are the same object
-        Assert.assertThat(ids.stream().distinct().count(), CoreMatchers.is(1L));
+        Assert.assertThat(ids.size(), CoreMatchers.is(1));
     }
 }

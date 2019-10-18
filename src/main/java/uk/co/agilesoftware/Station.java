@@ -42,15 +42,11 @@ class Station {
         return "Station " + name;
     }
 
-    synchronized void acquireLock() throws InterruptedException {
-        lock.tryLock(10, TimeUnit.MILLISECONDS);
-    }
-
-    synchronized void releaseLock() {
-        lock.unlock();
-    }
-
-    CargoPackage fetchPackage(long waitFor, TimeUnit milliseconds) throws InterruptedException {
-        return cargo.poll(waitFor, milliseconds);
+    CargoPackage fetchPackage(long waitFor, TimeUnit milliseconds) {
+        try {
+            return cargo.poll(waitFor, milliseconds);
+        } catch (InterruptedException e) {
+            throw new RuntimeException("Unable to fetch package from " + this, e);
+        }
     }
 }
