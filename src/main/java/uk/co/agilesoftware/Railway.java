@@ -13,7 +13,7 @@ import java.util.stream.IntStream;
 class Railway {
     //TODO: Read from Property
     static final int NO_OF_STATIONS = 8;
-    static final int TRACK_LENGTH_IN_KM = 100;
+    static final int TRACK_LENGTH_IN_KM = 1000;
 
     /**
      * Shared Immutable State: No need to Synchronise

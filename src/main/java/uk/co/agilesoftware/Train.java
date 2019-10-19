@@ -14,9 +14,9 @@ public class Train {
 
     //TODO: Read from properties
     private final int CARGO_CAPACITY = 10;
-    private final Duration MAX_PER_PACKAGE_LOAD_TIME = Duration.ofMillis(10);
-    private final Duration MAX_TRAIN_STOP = Duration.ofMillis(1000);
-    private final Duration PER_PACKAGE_OFFLOAD_TIME = Duration.ofMillis(50);
+    private final Duration MAX_PER_PACKAGE_LOAD_TIME = Duration.ofSeconds(1);
+    private final Duration MAX_TRAIN_STOP = Duration.ofSeconds(10);
+    private final Duration PER_PACKAGE_OFFLOAD_TIME = Duration.ofSeconds(1);
 
     private final String name;
     private final int speedInKmPerHr;
@@ -29,7 +29,7 @@ public class Train {
      * This is a circular counter which resets to 0 if NextStation >= NO_OF_STATIONS
      */
     private synchronized int nextStation() {
-        return currentStationNumber.incrementAndGet() % (Railway.NO_OF_STATIONS - 1);
+        return currentStationNumber.incrementAndGet() % (Railway.NO_OF_STATIONS);
     }
 
     Train(String name, int speedInKmPerHr) {
@@ -81,7 +81,7 @@ public class Train {
         Semaphore trackLock = Railway.getInstance().trackLocks.get(nextStation);
         try {
             trackLock.acquire();
-            TimeUnit.MILLISECONDS.sleep((Railway.TRACK_LENGTH_IN_KM/speedInKmPerHr)*1000);
+            TimeUnit.MILLISECONDS.sleep((Railway.TRACK_LENGTH_IN_KM/speedInKmPerHr)*100);
             currentStation = Railway.getInstance().stations.get(nextStation);
             logger.info(String.format("%s has arrived at %s", this, currentStation));
             return this;
