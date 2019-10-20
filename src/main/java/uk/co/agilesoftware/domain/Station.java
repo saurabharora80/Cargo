@@ -1,20 +1,28 @@
 package uk.co.agilesoftware.domain;
 
 import java.util.Collection;
+import java.util.Objects;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 public class Station {
+
+    static final String NAME_PREFIX = "S";
+
     //TODO: make configurable
     private final int CARGO_CAPACITY = 1000;
 
     final String name;
     private final BlockingQueue<CargoPackage> cargo = new LinkedBlockingQueue<>(CARGO_CAPACITY);
 
-    public Station(String name) {
+    private Station(String name) {
         this.name = name;
+    }
+
+    public Station(int index) {
+        this(NAME_PREFIX + index);
     }
 
     public void deliverPackages(Collection<CargoPackage> packages) {
@@ -25,11 +33,6 @@ public class Station {
         });
     }
 
-    @Override
-    public String toString() {
-        return "Station " + name;
-    }
-
     CargoPackage fetchPackage(long waitFor, TimeUnit milliseconds) {
         try {
             return cargo.poll(waitFor, milliseconds);
@@ -38,8 +41,12 @@ public class Station {
         }
     }
 
-    public Boolean isCargoFull() {
+    Boolean isCargoFull() {
         return cargo.size() == CARGO_CAPACITY;
+    }
+
+    public int cargoSize() {
+        return cargo.size();
     }
 
     /**
@@ -49,5 +56,23 @@ public class Station {
      */
     public boolean isCargoEmpty() {
         return cargo.isEmpty();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Station station = (Station) o;
+        return name.equals(station.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name);
+    }
+
+    @Override
+    public String toString() {
+        return "Station " + name;
     }
 }

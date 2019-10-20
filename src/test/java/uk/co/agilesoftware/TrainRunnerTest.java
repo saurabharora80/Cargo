@@ -21,9 +21,9 @@ public class TrainRunnerTest {
         try {
             Railway railway = new TestRailway();
             Station firstStation = railway.stations().get(0);
-            firstStation.deliverPackages(IntStream.range(1, 8).mapToObj(i -> new CargoPackage("S" + i)).collect(Collectors.toList()));
+            firstStation.deliverPackages(IntStream.range(1, CircularRailway.NO_OF_STATIONS).mapToObj(CargoPackage::new).collect(Collectors.toList()));
 
-            CountDownLatch stationsVisited = new CountDownLatch(8);
+            CountDownLatch stationsVisited = new CountDownLatch(CircularRailway.NO_OF_STATIONS);
 
             Train train = new Train("T1", 1000, railway);
             trainRunner.submit(new TrainRunner(train, stationsVisited));
@@ -46,14 +46,14 @@ public class TrainRunnerTest {
 
             //Deliver 5 package meant for each Station at Station0 = 5*7 = 35 packages
             IntStream.range(1, 6).forEach(ignore ->
-                firstStation.deliverPackages(IntStream.range(1, 8).mapToObj(forStation -> new CargoPackage("S" + forStation)).collect(Collectors.toList()))
+                firstStation.deliverPackages(IntStream.range(1, CircularRailway.NO_OF_STATIONS).mapToObj(CargoPackage::new).collect(Collectors.toList()))
             );
             //Deliver 5 for packages = Total 40 packages
-            firstStation.deliverPackages(IntStream.range(1, 6).mapToObj(forStation -> new CargoPackage("S" + forStation)).collect(Collectors.toList()));
+            firstStation.deliverPackages(IntStream.range(1, 6).mapToObj(CargoPackage::new).collect(Collectors.toList()));
 
             //I need a Tuple!
-            List<Tuple> trainRunnerTuple = IntStream.range(1, 5).mapToObj(trainNo ->
-                new Tuple(new Train("T" + trainNo, 1000, railway), new CountDownLatch(8))).collect(Collectors.toList()
+            List<Tuple> trainRunnerTuple = IntStream.range(0, CircularRailway.NO_OF_TRAINS).mapToObj(trainNo ->
+                new Tuple(new Train("T" + trainNo, 1000, railway), new CountDownLatch(CircularRailway.NO_OF_STATIONS))).collect(Collectors.toList()
             );
 
             trainRunnerTuple.forEach(tuple -> trainRunner.submit(new TrainRunner(tuple.train, tuple.countDownLatch)));

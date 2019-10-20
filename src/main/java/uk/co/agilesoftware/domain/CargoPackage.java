@@ -7,6 +7,19 @@ public class CargoPackage {
     private final String belongsToStation;
     private final String id;
 
+    CargoPackage(String belongsToStation) {
+        this.id = UUID.randomUUID().toString();
+        this.belongsToStation = belongsToStation;
+    }
+
+    public CargoPackage(int stationIndex) {
+        this(Station.NAME_PREFIX + stationIndex);
+    }
+
+    boolean belongTo(Station station) {
+        return station.name.equals(belongsToStation);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -24,14 +37,5 @@ public class CargoPackage {
     @Override
     public String toString() {
         return String.format("Cargo Package(%s) for %s", id, belongsToStation);
-    }
-
-    public CargoPackage(String belongsToStation) {
-        this.id = UUID.randomUUID().toString();
-        this.belongsToStation = belongsToStation;
-    }
-
-    boolean belongTo(Station station) {
-        return station.name.equals(belongsToStation);
     }
 }

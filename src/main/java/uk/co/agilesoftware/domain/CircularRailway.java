@@ -23,7 +23,7 @@ public class CircularRailway implements Railway {
     private final Map<Integer, Semaphore> trackLocks = new HashMap<>();
 
     private CircularRailway() {
-        IntStream.range(0, NO_OF_STATIONS).forEach(index -> stations.put(index, new Station("S"+(index))));
+        IntStream.range(0, NO_OF_STATIONS).forEach(index -> stations.put(index, new Station(index)));
         IntStream.range(0, NO_OF_STATIONS).forEach(index -> trackLocks.put(index, new Semaphore(1)));
     }
 

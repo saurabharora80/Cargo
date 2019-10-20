@@ -76,11 +76,6 @@ public class Train {
         return this;
     }
 
-    @Override
-    public String toString() {
-        return "Train " + name;
-    }
-
     /**
      * Only 1 Train can be on the section of track between any 2 stations which makes the track between stations
      * a 'Shared Resource'.
@@ -153,4 +148,10 @@ public class Train {
     static long perPackageOffLoadTimeInMillis() {
         return PER_PACKAGE_OFFLOAD_TIME.toMillis();
     }
+
+    @Override
+    public String toString() {
+        return "Train " + name;
+    }
+
 }

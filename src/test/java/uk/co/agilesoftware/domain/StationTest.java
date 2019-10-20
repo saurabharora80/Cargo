@@ -16,8 +16,8 @@ public class StationTest {
 
     @Test
     public void shouldBeAbleToDeliverCargoToStation() {
-        List<CargoPackage> packages = IntStream.range(1, 8).mapToObj(index -> new CargoPackage("S" + index)).collect(Collectors.toList());
-        Station station = new Station("S0");
+        List<CargoPackage> packages = IntStream.range(1, 8).mapToObj(CargoPackage::new).collect(Collectors.toList());
+        Station station = new Station(0);
         station.deliverPackages(packages);
 
         Set<CargoPackage> deliveredPackages = new HashSet<>();
@@ -32,8 +32,8 @@ public class StationTest {
 
     @Test
     public void stationShouldRejectPackageMeantForIt() {
-        List<CargoPackage> packages = IntStream.range(0, 8).mapToObj(index -> new CargoPackage("S" + index)).collect(Collectors.toList());
-        Station station = new Station("S0");
+        List<CargoPackage> packages = IntStream.range(0, 8).mapToObj(CargoPackage::new).collect(Collectors.toList());
+        Station station = new Station(0);
         station.deliverPackages(packages);
 
         Set<CargoPackage> deliveredPackages = new HashSet<>();
@@ -47,8 +47,8 @@ public class StationTest {
 
     @Test
     public void stationShouldRejectPackagesSilentlyIfCargoIsFull() {
-        List<CargoPackage> packages = IntStream.rangeClosed(0, 1001).mapToObj(index -> new CargoPackage("S" + index)).collect(Collectors.toList());
-        Station station = new Station("S0");
+        List<CargoPackage> packages = IntStream.rangeClosed(0, 1001).mapToObj(CargoPackage::new).collect(Collectors.toList());
+        Station station = new Station(0);
         station.deliverPackages(packages);
 
         assertTrue(station.isCargoFull());
