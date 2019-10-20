@@ -8,7 +8,8 @@
 
 plugins {
     // Apply the java-library plugin to add support for Java Library
-    id 'java-library'
+    id 'java'
+    id 'com.github.johnrengelman.shadow' version '5.1.0'
 }
 
 repositories {
@@ -27,4 +28,13 @@ dependencies {
     testImplementation 'junit:junit:4.12'
 
     testImplementation 'org.hamcrest:hamcrest-library:1.3'
+}
+
+jar {
+    manifest {
+        attributes 'Implementation-Title': 'cargo mover'
+        attributes 'Implementation-Version': project.version
+        attributes 'Main-Class': 'uk.co.agilesoftware.Application'
+        attributes 'Class-Path': (configurations.runtime.resolve().collect { File f -> 'lib/' + f.getName() }).join(' ')
+    }
 }
