@@ -1,5 +1,7 @@
 package uk.co.agilesoftware;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.co.agilesoftware.domain.CargoPackage;
 import uk.co.agilesoftware.domain.CircularRailway;
 import uk.co.agilesoftware.domain.Station;
@@ -7,13 +9,12 @@ import uk.co.agilesoftware.domain.Station;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.CountDownLatch;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 class StationCargoDelivery implements Runnable {
 
-    private static final Logger logger = Logger.getLogger("StationCargoDelivery");
+    private static final Logger logger = LoggerFactory.getLogger(StationCargoDelivery.class);
 
     //TODO: make configurable
     private static final int NO_OF_PACKAGES_TO_DELIVER = 100;

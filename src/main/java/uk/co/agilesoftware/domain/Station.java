@@ -1,13 +1,16 @@
 package uk.co.agilesoftware.domain;
 
+import org.slf4j.LoggerFactory;
+
 import java.util.Collection;
 import java.util.Objects;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
 
 public class Station {
+
+    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(Station.class);
 
     static final String NAME_PREFIX = "S";
 
@@ -28,7 +31,7 @@ public class Station {
     public void deliverPackages(Collection<CargoPackage> packages) {
         packages.stream().filter(p -> !p.belongTo(this)).forEach(p -> {
             if (!cargo.offer(p)) {
-                Logger.getLogger(getClass().getSimpleName()).info(String.format("%s Cargo full. Dropping %s", this, p));
+                logger.info(String.format("%s Cargo full. Dropping %s", this, p));
             }
         });
     }

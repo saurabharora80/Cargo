@@ -1,16 +1,18 @@
 package uk.co.agilesoftware.domain;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.time.Duration;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.logging.Logger;
 
 public class Train {
 
-    private static final Logger logger = Logger.getLogger("Train");
+    private static final Logger logger = LoggerFactory.getLogger(Train.class);
 
     //TODO: make configurable
     static final int CARGO_CAPACITY = 10;
