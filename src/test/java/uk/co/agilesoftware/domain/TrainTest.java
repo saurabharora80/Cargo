@@ -1,6 +1,7 @@
-package uk.co.agilesoftware;
+package uk.co.agilesoftware.domain;
 
 import org.junit.Test;
+import uk.co.agilesoftware.TestRailway;
 
 import java.time.Duration;
 import java.util.List;
@@ -14,9 +15,11 @@ import static org.junit.Assert.assertTrue;
 
 public class TrainTest {
 
+    private Railway railway = new TestRailway();
+
     @Test
     public void trainShouldProceedToNextStationAtTheGivenSpeed() {
-        Train train = new Train("T1", 100);
+        Train train = new Train("T1", 100, railway);
 
         long timeTakenToTravel = duration(Train::goToNextStation, train).toMillis();
 
@@ -28,7 +31,7 @@ public class TrainTest {
     public void trainMustLoadPackagesUntilItsCargoIsFull() {
         station(0).deliverPackages(generatePackagesFor(100, station(7)));
 
-        Train train = goToStation(new Train("T1", 1000), 0);
+        Train train = goToStation(new Train("T1", 1000, railway), 0);
         long cargoLoadTime = duration(Train::loadCargo, train).toMillis();
 
         assertTrue(train.isFull());
@@ -37,11 +40,10 @@ public class TrainTest {
 
     @Test
     public void trainMustLoadAllAvailablePackagesAndMoveOnEvenIfCargoIsNotFull() {
-        //Don't have a way to reset Cargo at a particular Station(which are singletons); so use S1 instead of S0
         int noOfPackages = 5;
         station(1).deliverPackages(generatePackagesFor(noOfPackages, station(7)));
 
-        Train train = goToStation(new Train("T1", 1000), 1);
+        Train train = goToStation(new Train("T1", 1000, railway), 1);
 
         long cargoLoadTime = duration(Train::loadCargo, train).toMillis();
 
@@ -57,7 +59,7 @@ public class TrainTest {
         int noOfPackages = 5;
         station(2).deliverPackages(generatePackagesFor(noOfPackages, station(3)));
 
-        Train train = goToStation(new Train("T1", 1000), 2);
+        Train train = goToStation(new Train("T1", 1000, railway), 2);
         train.loadCargo();
         train.goToNextStation();
 
@@ -75,7 +77,7 @@ public class TrainTest {
         station(3).deliverPackages(generatePackagesFor(noOfPackages, station(4)));
         station(3).deliverPackages(generatePackagesFor(noOfPackages, station(5)));
 
-        Train train = goToStation(new Train("T1", 1000), 3);
+        Train train = goToStation(new Train("T1", 1000, railway), 3);
         train.loadCargo();
         train.goToNextStation();
 
@@ -88,7 +90,7 @@ public class TrainTest {
     }
 
     private Station station(int i) {
-        return Railway.getInstance().stations.get(i);
+        return railway.stations().get(i);
     }
 
     private List<CargoPackage> generatePackagesFor(int noOfPackagesAtStation, Station station) {

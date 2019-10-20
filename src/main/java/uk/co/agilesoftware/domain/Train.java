@@ -1,4 +1,4 @@
-package uk.co.agilesoftware;
+package uk.co.agilesoftware.domain;
 
 import java.time.Duration;
 import java.util.concurrent.BlockingQueue;
@@ -12,14 +12,15 @@ public class Train {
 
     private static final Logger logger = Logger.getLogger("Train");
 
-    //TODO: Read from properties
+    //TODO: make configurable
     static final int CARGO_CAPACITY = 10;
     private static final Duration PER_PACKAGE_OFFLOAD_TIME = Duration.ofMillis(100);
     private static final Duration PER_PACKAGE_LOAD_TIME = Duration.ofMillis(100);
     private static final Duration WAIT_PACKAGES_TO_BECOME_AVAILABLE = Duration.ofMillis(10);
 
     private final String name;
-    private final int speedInKmPerHr;
+    private final int speedInKmPerSecond;
+    private final Railway railway;
     private final BlockingQueue<CargoPackage> cargo = new LinkedBlockingQueue<>(CARGO_CAPACITY);
     private final AtomicInteger currentStationNumber = new AtomicInteger(-1);
     private Station currentStation;
@@ -28,15 +29,16 @@ public class Train {
      * This is a circular counter which resets to 0 if NextStation >= NO_OF_STATIONS
      */
     private int nextStation() {
-        return currentStationNumber.incrementAndGet() % (Railway.NO_OF_STATIONS);
+        return currentStationNumber.incrementAndGet() % (CircularRailway.NO_OF_STATIONS);
     }
 
-    Train(String name, int speedInKmPerHr) {
+    public Train(String name, int speedInKmPerSecond, Railway railway) {
         this.name = name;
-        this.speedInKmPerHr = speedInKmPerHr;
+        this.speedInKmPerSecond = speedInKmPerSecond;
+        this.railway = railway;
     }
 
-    void loadCargo() {
+    public void loadCargo() {
         while (true) {
             CargoPackage aPackage = currentStation.fetchPackage(WAIT_PACKAGES_TO_BECOME_AVAILABLE.toMillis(), TimeUnit.MILLISECONDS);
             if (aPackage == null) {
@@ -50,14 +52,14 @@ public class Train {
             }
             boolean isSpaceAvailable = cargo.offer(aPackage);
             if (!isSpaceAvailable) {
-                logger.info(String.format("%s is Full. Departing Station %s", this, currentStation));
+                logger.info(String.format("%s is Full. Departing %s", this, currentStation));
                 break;
             }
             logger.info(String.format("Loading %s on $%s at %s", aPackage, this, currentStation));
         }
     }
 
-    Train offLoadCargo() {
+    public Train offLoadCargo() {
         cargo.iterator().forEachRemaining(p -> {
             if (p.belongTo(currentStation)) {
                 try {
@@ -87,13 +89,13 @@ public class Train {
      * @return
      */
     private Train goToStation(int nextStation) {
-        Semaphore trackLock = Railway.getInstance().trackLocks.get(nextStation);
+        Semaphore trackLock = railway.trackLocks().get(nextStation);
         try {
             //Secure the track for usage
             trackLock.acquire();
             //Simulates travelling to next Station
-            TimeUnit.MILLISECONDS.sleep((Railway.TRACK_LENGTH_IN_KM / speedInKmPerHr) * 100);
-            currentStation = Railway.getInstance().stations.get(nextStation);
+            TimeUnit.SECONDS.sleep((CircularRailway.DISTANCE_BETWEEN_STATIONS_IN_KM / speedInKmPerSecond));
+            currentStation = railway.stations().get(nextStation);
             logger.info(String.format("%s has arrived at %s", this, currentStation));
             return this;
         } catch (InterruptedException exception) {
@@ -103,7 +105,7 @@ public class Train {
         }
     }
 
-    Train goToNextStation() {
+    public Train goToNextStation() {
         return goToStation(nextStation());
     }
 
@@ -139,7 +141,7 @@ public class Train {
      *
      * @return
      */
-    boolean isEmpty() {
+    public boolean isEmpty() {
         return cargo.isEmpty();
     }
 

@@ -1,26 +1,26 @@
 package uk.co.agilesoftware;
 
-import java.util.List;
+import uk.co.agilesoftware.domain.CircularRailway;
+import uk.co.agilesoftware.domain.Train;
+
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.stream.Collectors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 
 public class Application {
 
     public static void main(String[] args) {
-        Railway.getInstance().stations.get(0).deliverPackages(generatePackages());
+        ScheduledExecutorService cargoDeliveryExecutor = Executors.newScheduledThreadPool(1);
+        CircularRailway.getInstance().stations().values().forEach(station ->
+            cargoDeliveryExecutor.scheduleWithFixedDelay(new StationCargoDelivery(station), 1, 1000, TimeUnit.MILLISECONDS)
+        );
 
-        ExecutorService trainRunnerExecutor = Executors.newFixedThreadPool(4);
-
-        IntStream.range(1, 5).forEach(index ->
-                trainRunnerExecutor.submit(new TrainRunner(new Train("T" + index, index * 100)))
+        ExecutorService trainRunnerExecutor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+        IntStream.range(0, CircularRailway.NO_OF_TRAINS).forEach(index ->
+            trainRunnerExecutor.submit(new TrainRunner(new Train("T" + index, (index+1) * 100, CircularRailway.getInstance())))
         );
     }
 
-    private static List<CargoPackage> generatePackages() {
-        return IntStream.range(0, Railway.NO_OF_STATIONS).asLongStream()
-                .mapToObj(i -> new CargoPackage("S" + i))
-                .collect(Collectors.toList());
-    }
 }
