@@ -21,18 +21,17 @@ class Station {
 
     void deliverPackages(Collection<CargoPackage> packages) {
         packages.stream().filter(p -> !p.belongTo(this)).forEach(p -> {
-            try {
-                if (cargo.offer(p, 10, TimeUnit.MILLISECONDS)) {
-                    //Logger.getLogger(getClass().getSimpleName()).info(String.format("Delivering %s to %s", p, this));
-                } else {
-                    Logger.getLogger(getClass().getSimpleName()).info(String.format("%s Cargo full. Dropping %s", this, p));
-                }
-            } catch (InterruptedException e) {
-                throw new RuntimeException(this + " couldn't accept " + p + " for delivery", e);
+            if (!cargo.offer(p)) {
+                Logger.getLogger(getClass().getSimpleName()).info(String.format("%s Cargo full. Dropping %s", this, p));
             }
         });
     }
 
+    /**
+     * Used only for testing
+     *
+     * @return
+     */
     Boolean isCargoFull() {
         return cargo.size() == CARGO_CAPACITY;
     }

@@ -12,13 +12,11 @@ import java.util.stream.Collectors;
 public class RailwayTest {
     @Test
     public void railwaysShouldOnlyBeInstantiatedOnce() throws Exception {
-        ExecutorService executor = Executors.newFixedThreadPool(5);
+        ExecutorService executor = Executors.newFixedThreadPool(3);
 
         Callable<String> createRailwayInstance = () -> Railway.getInstance().toString();
 
         List<Future<String>> railwayObjectIds = executor.invokeAll(new ArrayList<Callable<String>>(){{
-            add(createRailwayInstance);
-            add(createRailwayInstance);
             add(createRailwayInstance);
             add(createRailwayInstance);
             add(createRailwayInstance);
